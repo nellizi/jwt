@@ -1,6 +1,6 @@
 package com.cos.jwt.config;
 
-import com.cos.jwt.filtet.Myfilter1;
+import com.cos.jwt.config.jwt.JwtAuthenticationFilter;
 import com.cos.jwt.filtet.Myfilter3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
@@ -27,7 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
               .and()
               .addFilter(corsFilter)  //모든 요청은 이 필터를 타게 된다, CrossOrigin 인증x,시큐리티 필터에 등록 인증o
               .formLogin().disable()   // form로그인 방식을 안 쓴다 > jwt 방식 쓰려면 이렇게 해야 됨
-              .httpBasic().disable()
+              .httpBasic().disable()                   //WebSecurityConfigureAdapter가 가지고 있음
+              .addFilter(new JwtAuthenticationFilter(authenticationManager()))  //AuthenticationManager 를 매개변수로 꼭 넘겨줘야 함 , 이거를 통해서 로그인을 진행하는 것
               .authorizeRequests()
               .antMatchers("/api/v1/user/**")
               .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
