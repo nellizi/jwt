@@ -1,10 +1,13 @@
 package com.cos.jwt.config.jwt;
 
+
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.cos.jwt.config.auth.PrincipalDetails;
 import com.cos.jwt.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.bytecode.internal.bytebuddy.PassThroughInterceptor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,8 +18,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Date;
 
 //스프링 시큐리티에 존재하는 필터, /login요청해서 username,pw를 post로 전송하면 저 필터가 동작을 함.
 //현재는 Formlogin.disable() 상태이기 때문에 동작을 안 함 -> config에 따로 등록해줘서 동작하게끔 해야 한다.
@@ -76,6 +79,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     //이 때 여기서 jwt 토큰을 만들어서 request요청한 사용자에세 jwt토큰을 response 해준다.
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+
+        PrincipalDetails principalDetails=(PrincipalDetails)authResult.getPrincipal();
+
+       // Hash 암호방식
+        String jwtToken = JWT.create()
+                .withSubject("cos_Token")
+                .withExpiresAt(new Date(System.currentTimeMillis()+(60*1000*10)))
+                .withClaim("id", principalDetails.getUser().getId())
+                .withClaim("username", principalDetails.getUser().getUsername())
+                .sign(Algorithm.HMAC512("cos"));  // 시크릿 값을 가지고 있어야 한다.
+
+        response.addHeader("Authorization","Bearer"+jwtToken);
     }
 }
