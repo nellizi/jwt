@@ -93,3 +93,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader("Authorization","Bearer"+jwtToken);
     }
 }
+/**
+ * userId, pw 로그인 성공 -> 서버쪽 session Id생성, 클라이언트에 쿠키로 sessionId를 응답
+ * 클라이언트는 요청할 때 마다 쿠키에 sessionId를 항상 들고 요청을 함
+ * 서버는 sessionId가 유요한지 판단 후 응답
+ *
+ * userId, pw 로그인 성공 -> JWT토큰 생성, 클라이언트에게 토큰 응답
+ * -> 클라이언트가 서버에 요청 시 토큰을 가지고 요청
+ * 서버는 토큰의 유효성 검사를 해야함 -> 필터 필요!
+ *
+ */

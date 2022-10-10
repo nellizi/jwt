@@ -1,6 +1,7 @@
 package com.cos.jwt.config;
 
 import com.cos.jwt.config.jwt.JwtAuthenticationFilter;
+import com.cos.jwt.config.jwt.JwtAuthorizationFilter;
 import com.cos.jwt.filtet.Myfilter3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
               .formLogin().disable()   // form로그인 방식을 안 쓴다 > jwt 방식 쓰려면 이렇게 해야 됨
               .httpBasic().disable()                   //WebSecurityConfigureAdapter가 가지고 있음
               .addFilter(new JwtAuthenticationFilter(authenticationManager()))  //AuthenticationManager 를 매개변수로 꼭 넘겨줘야 함 , 이거를 통해서 로그인을 진행하는 것
+              .addFilter(new JwtAuthorizationFilter(authenticationManager()))
               .authorizeRequests()
               .antMatchers("/api/v1/user/**")
               .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
