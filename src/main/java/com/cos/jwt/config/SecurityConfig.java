@@ -1,6 +1,7 @@
 package com.cos.jwt.config;
 
 import com.cos.jwt.filtet.Myfilter1;
+import com.cos.jwt.filtet.Myfilter3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -19,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {           //시큐리티 필터 체인에 등록하는 방법, 이거 말고 Config로 직접 등록
-      //http.addFilterBefore(new Myfilter1(), BasicAuthenticationFilter.class); //basic필터가 시작하기 전에 내 필터를 등록한다.
+      http.addFilterBefore(new Myfilter3(), SecurityContextPersistenceFilter.class); //시큐리티가 동작하기 전에 걸러낸다.
       http.csrf().disable();                                              //STATELESS  == 세션을 사용사지 않겠다.
       http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
               .and()
